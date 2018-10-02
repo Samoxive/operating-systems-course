@@ -11,6 +11,7 @@ typedef struct file_system_entity {
     char* name;
     time_t creation_date;
     time_t modify_date;
+    file_system_entity_type entity_type;
     struct file_system_entity* next;
 } file_system_entity;
 
@@ -18,6 +19,7 @@ typedef struct file_system_folder {
     struct file_system_entity entity;
     i32 children_entities_count;
     file_system_entity* child;
+    struct file_system_folder* parent;
 } file_system_folder;
 
 typedef struct file_system_file {
