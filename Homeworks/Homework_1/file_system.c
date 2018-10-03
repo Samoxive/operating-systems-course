@@ -5,8 +5,6 @@
 #include <string.h>
 #include <time.h>
 
-void file_system_cleanup_folder(file_system* fs, file_system_folder* folder);
-
 void file_system_panic(char* message, file_system* fs) {
     printf("FATAL_ERROR: %s\n", message);
     file_system_cleanup_folder(fs, fs->root);
