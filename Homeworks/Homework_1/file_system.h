@@ -35,7 +35,7 @@ typedef struct file_system {
 
 } file_system;
 
-void file_system_cleanup_file_system(file_system *fs);
+void file_system_cleanup_file_system(file_system* fs);
 void file_system_panic(char* message, file_system* fs);
 file_system_entity file_system_create_entity(char* name,
                                              file_system_entity_type type);
@@ -69,6 +69,7 @@ void file_system_pwd(file_system* fs);
 void file_system_cd(file_system* fs, char* target_name);
 void file_system_cdup(file_system* fs);
 void file_system_modify_file(file_system* fs, char* name, char* new_content);
+int file_system_get_size_of_folder(file_system* fs, file_system_folder* folder);
 void file_system_rm(file_system* fs, char* name);
 void file_system_mov(file_system* fs,
                      char* target_name,
