@@ -299,14 +299,66 @@ void file_system_modify_file(file_system* fs, char* name, char* new_content) {
     file->content = new_content;
 }
 
+int file_system_get_size_of_folder(file_system* fs,
+                                   file_system_folder* folder) {
+    file_system_entity* ptr = folder->child;
+    int size = 0;
+    while (ptr != null) {
+        if (ptr->entity_type == FILE_TYPE) {
+            size += ((file_system_file*)ptr)->size;
+        } else if (ptr->entity_type == FOLDER_TYPE) {
+            size +=
+                file_system_get_size_of_folder(fs, (file_system_folder*)ptr);
+        } else {
+            file_system_panic("inconsistent state of file system entity seen!",
+                              fs);
+        }
+
+        ptr = ptr->next;
+    }
+
+    return size;
+}
+
 void file_system_rm(file_system* fs, char* name) {
     file_system_entity* entity = file_system_get_entity_by_name(fs, name);
     if (entity == null) {
         file_system_panic("rm target does not exist!", fs);
     }
 
-    file_system_remove_entity_from_folder(fs, name);
-    file_system_cleanup_entity(fs, entity);
+    char confirmation_input_buf[8] = {0};
+    if (entity->entity_type == FILE_TYPE) {
+        printf("Do you really want to remove the file `%s`? (y/n) ", name);
+    } else if (entity->entity_type == FOLDER_TYPE) {
+        int files = 0, folders = 1, total_size = 0;
+        file_system_entity* ptr = ((file_system_folder*)entity)->child;
+        while (ptr != null) {
+            if (ptr->entity_type == FILE_TYPE) {
+                files++;
+            } else if (ptr->entity_type == FOLDER_TYPE) {
+                folders++;
+            } else {
+                file_system_panic(
+                    "inconsistent state of file system entity seen!", fs);
+            }
+
+            ptr = ptr->next;
+        }
+
+        printf(
+            "Do you really want to remove %d file(s) and %d folder(s)? (y/n) ",
+            files, folders);
+    } else {
+        file_system_panic("inconsistent state of file system entity seen!", fs);
+    }
+
+    scanf("%s", confirmation_input_buf);
+    if (strcmp("y", confirmation_input_buf) == 0) {
+        int size = file_system_get_size_of_folder(fs, fs->cursor);
+        file_system_remove_entity_from_folder(fs, name);
+        file_system_cleanup_entity(fs, entity);
+        printf("%d byte(s) were freed.\n", size);
+    }
 }
 
 void file_system_mov(file_system* fs,
