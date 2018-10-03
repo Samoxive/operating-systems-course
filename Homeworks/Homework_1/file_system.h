@@ -35,6 +35,7 @@ typedef struct file_system {
 
 } file_system;
 
+void file_system_cleanup_file_system(file_system *fs);
 void file_system_panic(char* message, file_system* fs);
 file_system_entity file_system_create_entity(char* name,
                                              file_system_entity_type type);

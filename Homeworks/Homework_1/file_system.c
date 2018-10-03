@@ -5,10 +5,14 @@
 #include <string.h>
 #include <time.h>
 
-void file_system_panic(char* message, file_system* fs) {
-    printf("FATAL_ERROR: %s\n", message);
+void file_system_cleanup_file_system(file_system *fs) {
     file_system_cleanup_folder(fs, fs->root);
     free(fs);
+}
+
+void file_system_panic(char* message, file_system* fs) {
+    printf("FATAL_ERROR: %s\n", message);
+    file_system_cleanup_file_system(fs);
     exit(1);
 }
 
@@ -201,8 +205,10 @@ void file_system_print_folder(file_system_folder* folder) {
 void file_system_print_entity(file_system* fs, file_system_entity* entity) {
     if (entity->entity_type == FILE_TYPE) {
         file_system_file* file = (file_system_file*)entity;
+        file_system_print_file(file);
     } else if (entity->entity_type == FOLDER_TYPE) {
         file_system_folder* folder = (file_system_folder*)entity;
+        file_system_print_folder(folder);
     } else {
         file_system_panic("inconsistent state of file system entity seen!", fs);
     }
@@ -222,13 +228,14 @@ void file_system_lsrecursive_impl(file_system* fs,
     file_system_entity* ptr = folder->child;
     while (ptr != null) {
         for (int i = 0; i < level; i++) {
-            printf("-");
+            printf("|_");
         }
         file_system_print_entity(fs, ptr);
         if (ptr->entity_type == FOLDER_TYPE) {
-            file_system_lsrecursive_impl(fs, (file_system_folder*)ptr,
+            file_system_lsrecursive_impl(fs, (file_system_folder *) ptr,
                                          level + 1);
         }
+        ptr = ptr->next;
     }
 }
 
