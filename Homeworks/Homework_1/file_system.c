@@ -51,7 +51,7 @@ file_system_file* file_system_create_file(char* name) {
 
 file_system* file_system_create_file_system() {
     file_system* fs = malloc(sizeof(file_system));
-    fs->root = file_system_create_folder("/");
+    fs->root = file_system_create_folder(strdup("/"));
     fs->cursor = fs->root;
     return fs;
 }
