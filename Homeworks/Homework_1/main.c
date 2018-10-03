@@ -31,6 +31,7 @@ int main() {
     // test();
     file_system* fs = file_system_create_file_system();
     char input_buf[1024] = {0};
+    printf("Type `exit` to quit.\n");
     while (true) {
         printf("> ");
         scanf("%s", input_buf);
