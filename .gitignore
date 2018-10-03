@@ -175,3 +175,5 @@ CTestTestfile.cmake
 
 
 # End of https://www.gitignore.io/api/c,c++,cmake,clion+all,visualstudiocode
+
+build/
