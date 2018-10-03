@@ -5,9 +5,12 @@
 #include <string.h>
 #include <time.h>
 
+void file_system_cleanup_folder(file_system* fs, file_system_folder* folder);
+
 void file_system_panic(char* message, file_system* fs) {
-    // TODO(sam): fs cleanup
     printf("FATAL_ERROR: %s\n", message);
+    file_system_cleanup_folder(fs, fs->root);
+    free(fs);
     exit(1);
 }
 
@@ -61,8 +64,11 @@ void file_system_cleanup_file(file_system_file* file) {
 
 void file_system_cleanup_folder(file_system* fs, file_system_folder* folder) {
     free(folder->entity.name);
-    if (folder->child != null) {
-        file_system_cleanup_entity(fs, folder->child);
+    file_system_entity* ptr = folder->child;
+    while (ptr != null) {
+        file_system_entity* next_ptr = ptr->next;
+        file_system_cleanup_entity(fs, ptr);
+        ptr = next_ptr;
     }
     free(folder);
 }
@@ -119,14 +125,13 @@ file_system_entity* file_system_remove_entity_from_folder_fiber(
     file_system_entity* fiber_head,
     char* entity_name,
     bool* removed) {
-    if (fiber_head == null) {
-        return null;
+    if (fiber_head == null || (*removed) == true) {
+        return fiber_head;
     }
 
     if (strcmp(entity_name, fiber_head->name) == 0) {
         file_system_entity* next_entity = fiber_head->next;
         fiber_head->next = null;
-        file_system_cleanup_entity(fs, fiber_head);
         *removed = true;
         return next_entity;
     }
@@ -249,4 +254,81 @@ void file_system_pwd(file_system* fs) {
         printf("%s/", folder_names[i]);
     }
     printf("\n");
+}
+
+void file_system_cd(file_system* fs, char* target_name) {
+    file_system_entity* entity =
+        file_system_get_entity_by_name(fs, target_name);
+    if (entity == null) {
+        file_system_panic("cd target could not be found!", fs);
+    }
+
+    if (entity->entity_type != FOLDER_TYPE) {
+        file_system_panic("cd target can not be a file!", fs);
+    }
+
+    fs->cursor = (file_system_folder*)entity;
+}
+
+void file_system_cdup(file_system* fs) {
+    if (fs->cursor->parent == null) {
+        file_system_panic("you are already in the root folder, can not cdup!",
+                          fs);
+    }
+
+    fs->cursor = fs->cursor->parent;
+}
+
+void file_system_modify_file(file_system* fs, char* name, char* new_content) {
+    file_system_entity* entity = file_system_get_entity_by_name(fs, name);
+    if (entity == null) {
+        file_system_panic("modify target does not exist!", fs);
+    }
+
+    if (entity->entity_type != FILE_TYPE) {
+        file_system_panic("modify target has to be a file!", fs);
+    }
+
+    file_system_file* file = (file_system_file*)entity;
+    free(file->content);
+    file->content = new_content;
+}
+
+void file_system_rm(file_system* fs, char* name) {
+    file_system_entity* entity = file_system_get_entity_by_name(fs, name);
+    if (entity == null) {
+        file_system_panic("rm target does not exist!", fs);
+    }
+
+    file_system_remove_entity_from_folder(fs, name);
+    file_system_cleanup_entity(fs, entity);
+}
+
+void file_system_mov(file_system* fs,
+                     char* target_name,
+                     char* target_folder_name) {
+    file_system_entity* target_entity =
+        file_system_get_entity_by_name(fs, target_name);
+    if (target_entity == null) {
+        file_system_panic("mov target does not exist!", fs);
+    }
+
+    file_system_entity* target_folder_entity =
+        file_system_get_entity_by_name(fs, target_folder_name);
+    if (target_folder_entity == null) {
+        file_system_panic("mov target folder does not exist!", fs);
+    }
+
+    if (target_folder_entity->entity_type != FOLDER_TYPE) {
+        file_system_panic("mov target folder must (you guessed it) be a folder",
+                          fs);
+    }
+
+    file_system_remove_entity_from_folder(fs, target_name);
+    file_system_cd(fs, target_folder_name);
+    file_system_add_entity_to_folder(fs, target_entity);
+    if (target_entity->entity_type == FOLDER_TYPE) {
+        ((file_system_folder*)target_entity)->parent = fs->cursor;
+    }
+    file_system_cdup(fs);
 }
