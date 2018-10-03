@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-void file_system_cleanup_file_system(file_system *fs) {
+void file_system_cleanup_file_system(file_system* fs) {
     file_system_cleanup_folder(fs, fs->root);
     free(fs);
 }
@@ -146,7 +146,7 @@ void file_system_remove_entity_from_folder(file_system* fs, char* entity_name) {
     file_system_folder* folder = fs->cursor;
     folder->child = file_system_remove_entity_from_folder_fiber(
         fs, folder->child, entity_name, &removed);
-    if (removed) {
+    if (!removed) {
         file_system_panic(
             "could not find an entity with specified name in the folder to "
             "remove!",
@@ -232,7 +232,7 @@ void file_system_lsrecursive_impl(file_system* fs,
         }
         file_system_print_entity(fs, ptr);
         if (ptr->entity_type == FOLDER_TYPE) {
-            file_system_lsrecursive_impl(fs, (file_system_folder *) ptr,
+            file_system_lsrecursive_impl(fs, (file_system_folder*)ptr,
                                          level + 1);
         }
         ptr = ptr->next;
@@ -251,9 +251,10 @@ void file_system_pwd(file_system* fs) {
         folder_names[folders] = ptr->entity.name;
         folders++;
         ptr = ptr->parent;
-    } while (ptr->parent != null);
+    } while (ptr != null);
 
-    for (int i = (folders - 1); i > -1; i--) {
+    printf("/");
+    for (int i = (folders - 2); i > -1; i--) {
         printf("%s/", folder_names[i]);
     }
     printf("\n");
@@ -294,6 +295,7 @@ void file_system_modify_file(file_system* fs, char* name, char* new_content) {
 
     file_system_file* file = (file_system_file*)entity;
     free(file->content);
+    file->size = strlen(new_content);
     file->content = new_content;
 }
 
