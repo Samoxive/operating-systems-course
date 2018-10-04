@@ -27,9 +27,41 @@ void test() {
     file_system_cleanup_file_system(fs);
 }
 
+void setup_sample_file_system(file_system* fs) {
+    file_system_touch_folder(fs, strdup("home"));
+    file_system_cd(fs, "home");
+    file_system_touch_folder(fs, strdup("samil"));
+    file_system_cd(fs, "samil");
+    file_system_touch_folder(fs, strdup("courses"));
+    file_system_cd(fs, "courses");
+    file_system_touch_folder(fs, strdup("os"));
+    file_system_cd(fs, "os");
+    file_system_touch_file(fs, strdup("syllabus.txt"));
+    file_system_modify_file(
+        fs, "syllabus.txt",
+        strdup("This course starts at 14.10 on every Thursday."));
+    file_system_touch_file(fs, strdup("hw_1.c"));
+    file_system_modify_file(fs, "hw_1.c", strdup("// file system stuff"));
+    file_system_cdup(fs);
+    file_system_touch_folder(fs, strdup("math"));
+    file_system_cd(fs, "math");
+    file_system_touch_file(fs, strdup("hw_1"));
+    file_system_modify_file(fs, "hw_1", strdup("2 + 2 = 5"));
+    file_system_cdup(fs);
+    file_system_cdup(fs);
+    file_system_cdup(fs);
+    file_system_touch_folder(fs, strdup("kasim"));
+    file_system_cd(fs, "kasim");
+    file_system_touch_file(fs, strdup("grades.txt"));
+    file_system_modify_file(fs, "grades.txt", strdup("samil: 19"));
+    file_system_cdup(fs);
+    file_system_cdup(fs);
+}
+
 int main() {
     // test();
     file_system* fs = file_system_create_file_system();
+    setup_sample_file_system(fs);
     char input_buf[1024] = {0};
     printf("Type `exit` to quit.\n");
     while (true) {
