@@ -61,11 +61,7 @@ void setup_sample_file_system(file_system* fs) {
 int main() {
     // test();
     file_system* fs = file_system_create_file_system();
-<<<<<<< HEAD
-    // setup_sample_file_system(fs);
-=======
     setup_sample_file_system(fs);
->>>>>>> de255696c78e60c4ce4ed1e86b69d74e0653482a
     char input_buf[1024] = {0};
     printf("Type `exit` to quit.\n");
     while (true) {
