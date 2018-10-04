@@ -1,0 +1,93 @@
+This is homework 1 of operating systems course, it features a virtual file
+system that can be accessed and modified through a shell-like interface.
+
+C is a somewhat fun language with a simple syntax and extensive tooling, so
+working with it is mostly a breeze. However the lack namespaces force the
+programmers to have prefixes for each exported symbol in a C header, which
+is really tiring to read and write after a while.
+
+C lacks generics so in this homework, I had to implement and embed my own
+implementation of a singly-linked list into the data structures I use,
+instead of having one generic implementation with abstracted away methods.
+
+As much as I didn't want to deal with string operations in this homework,
+I still had to use them for implementing the shell code, which has to
+account for null termination, stripping newlines, dynamic sized user
+input and so on which would be easier to implement with a class wrapper
+around char pointers (std::string is a good example in C++).
+
+The characteristics of C given above have been the things I have struggled
+with the most, which can be annoying to work with as they force developers
+to write more code than necessary. For this homework, I implemented a way
+to have polymorphic elements in a folder's list of entities with type
+information attached for casting to proper types, which is fun but would
+also be annoying to work with in a real project.
+
+---Valgrind report of runtime while user creates the sample file system---
+
+samil@glados ~/o/H/Homework_1  $ valgrind ./Homework_1
+==23021== Memcheck, a memory error detector
+==23021== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==23021== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==23021== Command: ./Homework_1
+==23021==
+Type `exit` to quit.
+> mkdir home
+> cd home
+> mkdir samil
+> cd samil
+> mkdir courses
+> cd courses
+> mkdir os
+> cd os
+> touch syllabus.txt
+> edit syllabus.txt
+Please enter some text to overwrite the file content:
+
+This course starts at 14.10 on every Thursday.
+> touch hw_1.c
+> edit hw_1.c
+Please enter some text to overwrite the file content:
+
+// file system stuff
+> cdup
+> mkdir math
+> cd math
+> touch hw_1
+> edit hw_1
+Please enter some text to overwrite the file content:
+
+2 + 2 = 5
+> cdup
+> cdup
+> cdup
+> mkdir kasim
+> cd kasim
+> touch grades.txt
+> edit grades.txt
+Please enter some text to overwrite the file content:
+
+samil: 19
+> cdup
+> cdup
+> lsrecursive
+2 item(s) 04 Oct 19:49 04 Oct 19:51 home
+|_1 item(s) 04 Oct 19:49 04 Oct 19:49 samil
+|_|_2 item(s) 04 Oct 19:49 04 Oct 19:50 courses
+|_|_|_2 item(s) 04 Oct 19:49 04 Oct 19:50 os
+|_|_|_|_46B 04 Oct 19:49 04 Oct 19:49 syllabus.txt
+|_|_|_|_20B 04 Oct 19:50 04 Oct 19:50 hw_1.c
+|_|_|_1 item(s) 04 Oct 19:50 04 Oct 19:50 math
+|_|_|_|_9B 04 Oct 19:50 04 Oct 19:50 hw_1
+|_1 item(s) 04 Oct 19:51 04 Oct 19:51 kasim
+|_|_9B 04 Oct 19:51 04 Oct 19:51 grades.txt
+> exit
+==23021==
+==23021== HEAP SUMMARY:
+==23021==     in use at exit: 0 bytes in 0 blocks
+==23021==   total heap usage: 62 allocs, 62 frees, 9,376 bytes allocated
+==23021==
+==23021== All heap blocks were freed -- no leaks are possible
+==23021==
+==23021== For counts of detected and suppressed errors, rerun with: -v
+==23021== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
