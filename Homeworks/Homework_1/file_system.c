@@ -330,7 +330,7 @@ void file_system_rm(file_system* fs, char* name) {
     if (entity->entity_type == FILE_TYPE) {
         printf("Do you really want to remove the file `%s`? (y/n) ", name);
     } else if (entity->entity_type == FOLDER_TYPE) {
-        int files = 0, folders = 1, total_size = 0;
+        int files = 0, folders = 1;
         file_system_entity* ptr = ((file_system_folder*)entity)->child;
         while (ptr != null) {
             if (ptr->entity_type == FILE_TYPE) {
