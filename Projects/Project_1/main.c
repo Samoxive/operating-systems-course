@@ -9,5 +9,7 @@ int main(int argc, char** argv) {
         printf("%s\n", get_string_from_color(list.colors[i]));
     }
 
+    free(content);
+    free(list.colors);
     return 0;
 }
