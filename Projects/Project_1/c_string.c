@@ -9,3 +9,7 @@ char* c_string_concat(char* a, char* b) {
     strcat(new_string, b);
     return new_string;
 }
+
+bool c_string_equals(char* a, char* b) {
+    return strcmp(a, b) == 0;
+}
