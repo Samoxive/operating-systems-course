@@ -55,17 +55,21 @@ color_list split_input_into_colors(char* string) {
     int capacity = 8;
     COLOR* colors = malloc(capacity * sizeof(COLOR));
     char buf[128] = {0};
-    while (sscanf(string, " %[^,\n],", buf) != EOF) {
+    i32 string_length = strlen(string);
+    FILE *string_buffer = fmemopen(string, string_length * sizeof(char), "r");
+    while (fscanf(string_buffer, " %[^,\n],", buf) != EOF) {
         COLOR color = get_color_from_string(buf);
 
         if (i == capacity) {
             capacity *= 2;
-            colors = realloc(colors, capacity);
+            colors = realloc(colors, capacity * sizeof(COLOR));
         }
 
         colors[i] = color;
+        i++;
     }
 
+    fclose(string_buffer);
     color_list list = {.colors = colors, .size = i};
     return list;
 }
