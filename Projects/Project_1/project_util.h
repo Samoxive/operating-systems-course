@@ -34,3 +34,8 @@ COLOR get_color_from_string(char*);
 char* get_string_from_color(COLOR);
 color_parse_result parse_string_into_colors(char* string);
 color_list split_input_into_colors(char*);
+void write_final_output_to_file(COLOR target_color,
+                                i32 result_count,
+                                color_parse_result* results,
+                                char** file_names,
+                                char* output_file_name);

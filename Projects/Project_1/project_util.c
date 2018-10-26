@@ -116,3 +116,70 @@ color_list split_input_into_colors(char* string) {
     color_list list = {.colors = colors, .size = i};
     return list;
 }
+
+void write_final_output_to_file(COLOR target_color,
+                                i32 result_count,
+                                color_parse_result* results,
+                                char** file_names,
+                                char* output_file_name) {
+    i32 target_color_count = 0;
+    i32 total_colors_count = 0;
+
+    for (i32 i = 0; i < result_count; i++) {
+        color_parse_result result = results[i];
+        switch (target_color) {
+            case RED:
+                target_color_count += result.red;
+                break;
+            case GREEN:
+                target_color_count += result.green;
+                break;
+            case BLUE:
+                target_color_count += result.blue;
+                break;
+            case ORANGE:
+                target_color_count += result.orange;
+                break;
+            case YELLOW:
+                target_color_count += result.yellow;
+                break;
+            case WHITE:
+                target_color_count += result.white;
+                break;
+            case BLACK:
+                target_color_count += result.black;
+                break;
+            case PURPLE:
+                target_color_count += result.purple;
+                break;
+            case INVALID_COLOR:
+                continue;
+        }
+
+        total_colors_count += results[i].red + results[i].green +
+                              results[i].blue + results[i].orange +
+                              results[i].yellow + results[i].white +
+                              results[i].black + results[i].purple;
+    }
+
+    FILE* output_file = fopen(output_file_name, "w");
+    if (output_file == null) {
+        printf("Could not open output file.");
+        exit(-1);
+    }
+
+    fprintf(output_file, "%s: %d/%d\n", get_string_from_color(target_color),
+            target_color_count, total_colors_count);
+
+    for (i32 i = 0; i < result_count; i++) {
+        color_parse_result result = results[i];
+        fprintf(output_file,
+                "%s, red: %d, green: %d, blue: %d, orange: %d, yellow: %d, "
+                "white: %d, black: %d, purple: %d\n",
+                file_names[i], result.red, result.green, result.blue,
+                result.orange, result.yellow, result.white, result.black,
+                result.purple);
+    }
+
+    fclose(output_file);
+}
