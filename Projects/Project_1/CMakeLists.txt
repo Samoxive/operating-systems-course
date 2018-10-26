@@ -6,4 +6,6 @@ set(CMAKE_BUILD_TYPE Debug)
 
 add_library(common c_string.c file.c project_util.c)
 add_executable(test_o main.c)
+add_executable(psearch1 psearch1.c)
 target_link_libraries(test_o common)
+target_link_libraries(psearch1 common)
