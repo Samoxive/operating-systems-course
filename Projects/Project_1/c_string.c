@@ -13,3 +13,13 @@ char* c_string_concat(char* a, char* b) {
 bool c_string_equals(char* a, char* b) {
     return strcmp(a, b) == 0;
 }
+
+char** c_string_array_subarray(char** arr, i32 start, i32 end) {
+    i32 length = end - start;
+    char** new_arr = malloc(length * sizeof(char*));
+    for (i32 i = 0; i < length; i++) {
+        new_arr[i] = arr[start + i];
+    }
+
+    return new_arr;
+}
