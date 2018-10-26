@@ -17,10 +17,17 @@ void child_process(char* file_name) {
 i32 main(i32 argc, char** argv) {
     // psearch orange 3 input1.txt input2.txt input3.txt output.txt
     if (argc < 5) {
-        return 1;
+        printf("Invalid command line input.");
+        return -1;
     }
 
-    char* target_color = argv[1];
+    char* target_color_string = argv[1];
+    COLOR target_color = get_color_from_string(target_color_string);
+    if (target_color == INVALID_COLOR) {
+        printf("Invalid color input.");
+        exit(-1);
+    }
+
     char* output_file_name = argv[argc - 1];
     for (i32 i = 3; i < argc - 1; i++) {
         i32 f = fork();
@@ -43,5 +50,10 @@ i32 main(i32 argc, char** argv) {
         free(output_file_name);
     }
 
+    char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
+    write_final_output_to_file(target_color, argc - 4, output_results,
+                               input_files_names, output_file_name);
+    free(output_results);
+    free(input_files_names);
     return 0;
 }
