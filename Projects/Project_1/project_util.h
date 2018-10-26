@@ -1,5 +1,7 @@
 #pragma once
 
+#include "typedefs.h"
+
 typedef enum {
     RED,
     GREEN,
@@ -14,9 +16,21 @@ typedef enum {
 
 typedef struct {
     COLOR* colors;
-    int size;
+    i32 size;
 } color_list;
+
+typedef struct {
+    i32 red;
+    i32 green;
+    i32 blue;
+    i32 orange;
+    i32 yellow;
+    i32 white;
+    i32 black;
+    i32 purple;
+} color_parse_result;
 
 COLOR get_color_from_string(char*);
 char* get_string_from_color(COLOR);
+color_parse_result parse_string_into_colors(char* string);
 color_list split_input_into_colors(char*);

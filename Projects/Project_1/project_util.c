@@ -50,13 +50,56 @@ char* get_string_from_color(COLOR color) {
     }
 }
 
+color_parse_result parse_string_into_colors(char* string) {
+    color_parse_result result = {0};
+    char buf[128] = {0};
+    i32 string_length = strlen(string);
+    FILE* string_buffer = fmemopen(string, string_length * sizeof(char), "r");
+
+    while (fscanf(string_buffer, " %[^,\n],", buf) != EOF) {
+        COLOR color = get_color_from_string(buf);
+
+        switch (color) {
+            case RED:
+                result.red += 1;
+                break;
+            case GREEN:
+                result.green += 1;
+                break;
+            case BLUE:
+                result.blue += 1;
+                break;
+            case ORANGE:
+                result.orange += 1;
+                break;
+            case YELLOW:
+                result.yellow += 1;
+                break;
+            case WHITE:
+                result.white += 1;
+                break;
+            case BLACK:
+                result.black += 1;
+                break;
+            case PURPLE:
+                result.purple += 1;
+                break;
+            case INVALID_COLOR:
+                continue;
+        }
+    }
+
+    fclose(string_buffer);
+    return result;
+}
+
 color_list split_input_into_colors(char* string) {
-    int i = 0;
-    int capacity = 8;
+    i32 i = 0;
+    i32 capacity = 8;
     COLOR* colors = malloc(capacity * sizeof(COLOR));
     char buf[128] = {0};
     i32 string_length = strlen(string);
-    FILE *string_buffer = fmemopen(string, string_length * sizeof(char), "r");
+    FILE* string_buffer = fmemopen(string, string_length * sizeof(char), "r");
     while (fscanf(string_buffer, " %[^,\n],", buf) != EOF) {
         COLOR color = get_color_from_string(buf);
 
