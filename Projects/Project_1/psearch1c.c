@@ -47,8 +47,6 @@ i32 main(i32 argc, char** argv) {
     i32 input_files_count = argc - 4;
     char* output_file_name = argv[argc - 1];
     char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
-    color_parse_result* results =
-        malloc(input_files_count * sizeof(color_parse_result));
     i32 pipe_fds[2] = {0};
     if (pipe(pipe_fds) == -1) {
         printf("Could not create pipe.");
@@ -69,6 +67,8 @@ i32 main(i32 argc, char** argv) {
         }
     }
 
+    color_parse_result* results =
+        malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
         piped_color_parse_result result = {0};
         if (read(fd_pipe_r, &result, sizeof(piped_color_parse_result)) == -1) {
@@ -82,6 +82,7 @@ i32 main(i32 argc, char** argv) {
                                input_files_names, output_file_name);
     close(fd_pipe_r);
     close(fd_pipe_w);
+    free(results);
     free(input_files_names);
     return 0;
 }
