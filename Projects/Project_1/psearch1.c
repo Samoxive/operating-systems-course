@@ -33,6 +33,7 @@ i32 main(i32 argc, char** argv) {
         i32 f = fork();
         if (f == 0) {
             child_process(argv[i]);
+            break;
         }
     }
 
