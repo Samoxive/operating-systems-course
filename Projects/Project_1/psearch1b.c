@@ -109,7 +109,7 @@ i32 main(i32 argc, char** argv) {
         }
     }
 
-    write_final_output_to_file(target_color, argc - 4, results,
+    write_final_output_to_file(target_color, input_files_count, results,
                                input_files_names, output_file_name);
     for (i32 i = 0; i < input_files_count; i++) {
         sem_destroy(&(semaphores[i]));
