@@ -122,10 +122,15 @@ void write_final_output_to_file(COLOR target_color,
                                 color_parse_result* results,
                                 char** file_names,
                                 char* output_file_name) {
-    i32 target_color_count = 0;
-    i32 total_colors_count = 0;
+    FILE* output_file = fopen(output_file_name, "w");
+    if (output_file == null) {
+        printf("Could not open output file.\n");
+        exit(-1);
+    }
 
     for (i32 i = 0; i < result_count; i++) {
+        i32 target_color_count = 0;
+        i32 total_colors_count = 0;
         color_parse_result result = results[i];
         switch (target_color) {
             case RED:
@@ -160,25 +165,14 @@ void write_final_output_to_file(COLOR target_color,
                               results[i].blue + results[i].orange +
                               results[i].yellow + results[i].white +
                               results[i].black + results[i].purple;
-    }
-
-    FILE* output_file = fopen(output_file_name, "w");
-    if (output_file == null) {
-        printf("Could not open output file.");
-        exit(-1);
-    }
-
-    fprintf(output_file, "%s: %d/%d\n", get_string_from_color(target_color),
-            target_color_count, total_colors_count);
-
-    for (i32 i = 0; i < result_count; i++) {
-        color_parse_result result = results[i];
         fprintf(output_file,
-                "%s, red: %d, green: %d, blue: %d, orange: %d, yellow: %d, "
+                "%s: %d/%d\n%s, red: %d, green: %d, blue: %d, orange: %d, "
+                "yellow: %d, "
                 "white: %d, black: %d, purple: %d\n",
-                file_names[i], result.red, result.green, result.blue,
-                result.orange, result.yellow, result.white, result.black,
-                result.purple);
+                get_string_from_color(target_color), target_color_count,
+                total_colors_count, file_names[i], result.red, result.green,
+                result.blue, result.orange, result.yellow, result.white,
+                result.black, result.purple);
     }
 
     fclose(output_file);
