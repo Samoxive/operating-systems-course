@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* SHM_NAME_SEMAPHORS = "/semaphors";
+const char* SHM_NAME_SEMAPHORS = "/semaphores";
 const char* SHM_NAME_RESULTS = "/results";
 
 void child_process(char* file_name,
@@ -25,13 +25,13 @@ void child_process(char* file_name,
         mmap(null, input_files_count * sizeof(color_parse_result),
              PROT_READ | PROT_WRITE, MAP_SHARED, fd_results, 0);
     if (semaphores == MAP_FAILED || results == MAP_FAILED) {
-        printf("Could not mmap shared memory blocks.");
+        printf("Could not mmap shared memory blocks.\n");
         exit(-1);
     }
 
     results[index] = result;
     if (sem_post(&(semaphores[index])) == -1) {
-        printf("Could not post on semaphore.");
+        printf("Could not post on semaphore.\n");
         exit(-1);
     };
 
@@ -43,14 +43,14 @@ void child_process(char* file_name,
 i32 main(i32 argc, char** argv) {
     // psearch orange 3 input1.txt input2.txt input3.txt output.txt
     if (argc < 5) {
-        printf("Invalid command line input.");
-        return -1;
+        printf("Invalid command line input.\n");
+        exit(-1);
     }
 
     char* target_color_string = argv[1];
     COLOR target_color = get_color_from_string(target_color_string);
     if (target_color == INVALID_COLOR) {
-        printf("Invalid color input.");
+        printf("Invalid color input.\n");
         exit(-1);
     }
 
@@ -62,14 +62,14 @@ i32 main(i32 argc, char** argv) {
     i32 fd_results =
         shm_open(SHM_NAME_RESULTS, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd_semaphores == -1 || fd_results == -1) {
-        printf("Could not open shared memory blocks.");
+        printf("Could not open shared memory blocks.\n");
         exit(-1);
     }
 
     if (ftruncate(fd_semaphores, input_files_count * sizeof(sem_t)) == -1 ||
         ftruncate(fd_results, input_files_count * sizeof(color_parse_result)) ==
             -1) {
-        printf("Could not extend shared memory blocks.");
+        printf("Could not extend shared memory blocks.\n");
         exit(-1);
     }
 
@@ -80,13 +80,13 @@ i32 main(i32 argc, char** argv) {
         mmap(null, input_files_count * sizeof(color_parse_result),
              PROT_READ | PROT_WRITE, MAP_SHARED, fd_results, 0);
     if (semaphores == MAP_FAILED || results == MAP_FAILED) {
-        printf("Could not mmap shared memory blocks.");
+        printf("Could not mmap shared memory blocks.\n");
         exit(-1);
     }
 
     for (i32 i = 0; i < input_files_count; i++) {
         if (sem_init(&(semaphores[i]), 1, 0) == -1) {
-            printf("Could not create semaphore.");
+            printf("Could not create semaphore.\n");
             exit(-1);
         }
     }
@@ -104,7 +104,7 @@ i32 main(i32 argc, char** argv) {
 
     for (i32 i = 0; i < input_files_count; i++) {
         if (sem_wait(&(semaphores[i])) == -1) {
-            printf("Could not wait on semaphore.");
+            printf("Could not wait on semaphore.\n");
             exit(-1);
         }
     }

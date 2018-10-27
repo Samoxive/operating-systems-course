@@ -24,7 +24,7 @@ void child_process(char* file_name, i32 fd_pipe_w, i32 index) {
     piped_color_parse_result piped_result = {.index = index, .result = result};
     if (write(fd_pipe_w, &piped_result, sizeof(piped_color_parse_result)) ==
         -1) {
-        printf("Could not write to pipe.");
+        printf("Could not write to pipe.\n");
         exit(-1);
     }
     free(file_content);
@@ -33,14 +33,14 @@ void child_process(char* file_name, i32 fd_pipe_w, i32 index) {
 i32 main(i32 argc, char** argv) {
     // psearch orange 3 input1.txt input2.txt input3.txt output.txt
     if (argc < 5) {
-        printf("Invalid command line input.");
-        return -1;
+        printf("Invalid command line input.\n");
+        exit(-1);
     }
 
     char* target_color_string = argv[1];
     COLOR target_color = get_color_from_string(target_color_string);
     if (target_color == INVALID_COLOR) {
-        printf("Invalid color input.");
+        printf("Invalid color input.\n");
         exit(-1);
     }
 
@@ -49,7 +49,7 @@ i32 main(i32 argc, char** argv) {
     char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
     i32 pipe_fds[2] = {0};
     if (pipe(pipe_fds) == -1) {
-        printf("Could not create pipe.");
+        printf("Could not create pipe.\n");
         exit(-1);
     }
     i32 fd_pipe_r = pipe_fds[0];
@@ -72,7 +72,7 @@ i32 main(i32 argc, char** argv) {
     for (i32 i = 0; i < input_files_count; i++) {
         piped_color_parse_result result = {0};
         if (read(fd_pipe_r, &result, sizeof(piped_color_parse_result)) == -1) {
-            printf("Could not read from pipe.");
+            printf("Could not read from pipe.\n");
             exit(-1);
         }
         results[result.index] = result.result;

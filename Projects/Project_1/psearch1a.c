@@ -17,14 +17,14 @@ void child_process(char* file_name) {
 i32 main(i32 argc, char** argv) {
     // psearch orange 3 input1.txt input2.txt input3.txt output.txt
     if (argc < 5) {
-        printf("Invalid command line input.");
-        return -1;
+        printf("Invalid command line input.\n");
+        exit(-1);
     }
 
     char* target_color_string = argv[1];
     COLOR target_color = get_color_from_string(target_color_string);
     if (target_color == INVALID_COLOR) {
-        printf("Invalid color input.");
+        printf("Invalid color input.\n");
         exit(-1);
     }
 
