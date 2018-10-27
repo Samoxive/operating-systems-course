@@ -45,7 +45,7 @@ char* get_string_from_color(COLOR color) {
             return "black";
         case PURPLE:
             return "purple";
-        case INVALID_COLOR:
+        default:
             return "invalid_color";
     }
 }
