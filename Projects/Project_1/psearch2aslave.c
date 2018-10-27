@@ -23,7 +23,7 @@ i32 main(i32 argc, char** argv) {
 
     color_parse_result result = parse_string_into_colors(file_content);
     char* output_shm_name = c_string_concat("/psearch2a_", input_file_name);
-    for (i32 i = 1; i < strlen(output_shm_name); i++) {
+    for (usize i = 1; i < strlen(output_shm_name); i++) {
         if (output_shm_name[i] == '/') {
             output_shm_name[i] = '.';
         }

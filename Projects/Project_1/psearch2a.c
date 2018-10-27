@@ -33,7 +33,7 @@ i32 main(i32 argc, char** argv) {
     char** results_shm_names = malloc(input_files_count * sizeof(char*));
     for (i32 i = 0; i < input_files_count; i++) {
         char* shm_name = c_string_concat("/psearch2a_", input_files_names[i]);
-        for (i32 i = 1; i < strlen(shm_name); i++) {
+        for (usize i = 1; i < strlen(shm_name); i++) {
             if (shm_name[i] == '/') {
                 shm_name[i] = '.';
             }
