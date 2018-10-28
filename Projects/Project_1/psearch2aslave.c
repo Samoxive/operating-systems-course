@@ -22,7 +22,7 @@ i32 main(i32 argc, char** argv) {
     char* input_file_name = argv[2];
     char* file_content = read_file_to_string(input_file_name);
     if (file_content == null) {
-        printf("Could not read given shared_file.\n");
+        printf("Could not read given file.\n");
         exit(-1);
     }
 
