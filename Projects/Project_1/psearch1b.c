@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* SHM_NAME_SEMAPHORS = "/semaphores";
+const char* SHM_NAME_SEMAPHORES = "/semaphores";
 const char* SHM_NAME_RESULTS = "/results";
 
 void child_process(char* file_name,
@@ -58,7 +58,7 @@ i32 main(i32 argc, char** argv) {
     char* output_file_name = argv[argc - 1];
     char** input_files_names = extract_input_files_names_from_argv(argv, argc);
     i32 fd_semaphores =
-        shm_open(SHM_NAME_SEMAPHORS, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        shm_open(SHM_NAME_SEMAPHORES, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     i32 fd_results =
         shm_open(SHM_NAME_RESULTS, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd_semaphores == -1 || fd_results == -1) {
@@ -116,7 +116,7 @@ i32 main(i32 argc, char** argv) {
     }
     munmap(semaphores, input_files_count * sizeof(sem_t));
     munmap(results, input_files_count * sizeof(color_parse_result));
-    shm_unlink(SHM_NAME_SEMAPHORS);
+    shm_unlink(SHM_NAME_SEMAPHORES);
     shm_unlink(SHM_NAME_RESULTS);
     free(input_files_names);
     return 0;
