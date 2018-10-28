@@ -20,7 +20,6 @@ i32 main(i32 argc, char** argv) {
     char* input_file_name = argv[2];
     i32 result_index = atoi(argv[3]);
     i32 result_length = atoi(argv[4]);
-    printf("%d %d\n", result_index, result_length);
     if (result_index < 0 || result_length < 0) {
         printf("Invalid command line input.\n");
         exit(-1);
@@ -35,7 +34,6 @@ i32 main(i32 argc, char** argv) {
 
     i32 shm_fd = shm_open(psearch2a_shm_name, O_RDWR, S_IRUSR | S_IWUSR);
     if (shm_fd == -1) {
-        char s[100];
         printf("Could not open shared memory blocks.\n");
         exit(-1);
     }
@@ -52,5 +50,5 @@ i32 main(i32 argc, char** argv) {
 
     munmap(shm_result, result_length * sizeof(color_parse_result));
     free(file_content);
-    exit(0);
+    return 0;
 }
