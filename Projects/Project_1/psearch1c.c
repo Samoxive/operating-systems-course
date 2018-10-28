@@ -13,12 +13,11 @@ typedef struct {
     i32 fd_pipe_w;
 } pipe_fd_pair;
 
-void child_process(char* file_name, i32 fd_pipe_w, i32 index) {
+void child_process(char* file_name, i32 fd_pipe_w) {
     char* file_content = read_file_to_string(file_name);
     color_parse_result result = parse_string_into_colors(file_content);
-    anon_color_parse_result piped_result = {.index = index, .result = result};
-    if (write(fd_pipe_w, &piped_result, sizeof(anon_color_parse_result)) ==
-        -1) {
+    pid_color_parse_result piped_result = {.pid = getpid(), .result = result};
+    if (write(fd_pipe_w, &piped_result, sizeof(pid_color_parse_result)) == -1) {
         printf("Could not write to pipe.\n");
         exit(-1);
     }
@@ -50,27 +49,33 @@ i32 main(i32 argc, char** argv) {
     i32 fd_pipe_r = pipe_fds[0];
     i32 fd_pipe_w = pipe_fds[1];
 
+    pid_t* slave_pids = malloc(input_files_count * sizeof(pid_t));
     for (i32 i = 0; i < input_files_count; i++) {
-        i32 f = fork();
+        pid_t f = fork();
         if (f == 0) {
-            child_process(input_files_names[i], fd_pipe_w, i);
+            child_process(input_files_names[i], fd_pipe_w);
             close(fd_pipe_r);
             close(fd_pipe_w);
             free(input_files_names);
+            free(slave_pids);
             exit(0);
             break;
+        } else {
+            slave_pids[i] = f;
         }
     }
 
     color_parse_result* results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        anon_color_parse_result result = {0};
-        if (read(fd_pipe_r, &result, sizeof(anon_color_parse_result)) == -1) {
+        pid_color_parse_result result = {0};
+        if (read(fd_pipe_r, &result, sizeof(pid_color_parse_result)) == -1) {
             printf("Could not read from pipe.\n");
             exit(-1);
         }
-        results[result.index] = result.result;
+        i32 index =
+            get_index_from_pid_array(slave_pids, input_files_count, result.pid);
+        results[index] = result.result;
     }
 
     write_final_output_to_file(target_color, input_files_count, results,
@@ -79,5 +84,6 @@ i32 main(i32 argc, char** argv) {
     close(fd_pipe_w);
     free(results);
     free(input_files_names);
+    free(slave_pids);
     return 0;
 }
