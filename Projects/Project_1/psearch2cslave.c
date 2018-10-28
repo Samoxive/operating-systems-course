@@ -12,18 +12,12 @@
 const char* message_queue_name = "/psearch_mq";
 
 i32 main(i32 argc, char** argv) {
-    if (argc != 5) {
+    if (argc != 3) {
         printf("Invalid command line input.\n");
         exit(-1);
     }
 
     char* input_file_name = argv[2];
-    i32 result_index = atoi(argv[3]);
-    i32 result_length = atoi(argv[4]);
-    if (result_index < 0 || result_length < 0) {
-        printf("Invalid command line input.\n");
-        exit(-1);
-    }
     char* file_content = read_file_to_string(input_file_name);
     if (file_content == null) {
         printf("Could not read given file.\n");
@@ -37,10 +31,9 @@ i32 main(i32 argc, char** argv) {
         exit(-1);
     }
 
-    anon_color_parse_result anon_result = {.index = result_index,
-                                           .result = result};
+    pid_color_parse_result anon_result = {.pid = getpid(), .result = result};
     if (mq_send(message_queue, (char*)&anon_result,
-                sizeof(anon_color_parse_result), 0) == -1) {
+                sizeof(pid_color_parse_result), 0) == -1) {
         printf("Failed to send message.\n");
         exit(-1);
     }

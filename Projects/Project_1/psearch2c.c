@@ -30,7 +30,7 @@ i32 main(i32 argc, char** argv) {
     char** input_files_names = extract_input_files_names_from_argv(argv, argc);
 
     struct mq_attr message_queue_attr = {
-        .mq_maxmsg = 1, .mq_msgsize = sizeof(anon_color_parse_result)};
+        .mq_maxmsg = 1, .mq_msgsize = sizeof(pid_color_parse_result)};
     mqd_t message_queue = mq_open(message_queue_name, O_RDWR | O_CREAT,
                                   S_IRUSR | S_IWUSR, &message_queue_attr);
     if (message_queue == -1) {
@@ -40,31 +40,36 @@ i32 main(i32 argc, char** argv) {
         exit(-1);
     }
 
+    pid_t* slave_pids = malloc(input_files_count * sizeof(pid_t));
     for (i32 i = 0; i < input_files_count; i++) {
-        i32 f = fork();
+        pid_t f = fork();
         if (f == 0) {
             char index_str[12];
             char length_str[12];
             sprintf(index_str, "%d", i);
             sprintf(length_str, "%d", input_files_count);
             execl(psearch2cslave_exe, psearch2cslave_exe, target_color_string,
-                  input_files_names[i], index_str, length_str, null);
+                  input_files_names[i], null);
 
             printf("Slave process failed. Errno: %d\n", errno);
             exit(-1);
+        } else {
+            slave_pids[i] = f;
         }
     }
 
     color_parse_result* results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        anon_color_parse_result result = {0};
+        pid_color_parse_result result = {0};
         if (mq_receive(message_queue, (char*)&result,
-                       sizeof(anon_color_parse_result), null) == -1) {
+                       sizeof(pid_color_parse_result), null) == -1) {
             printf("Could not receive from message queue.\n");
             exit(-1);
         }
-        results[result.index] = result.result;
+        i32 index =
+            get_index_from_pid_array(slave_pids, input_files_count, result.pid);
+        results[index] = result.result;
     }
 
     write_final_output_to_file(target_color, input_files_count, results,
@@ -74,5 +79,6 @@ i32 main(i32 argc, char** argv) {
     mq_unlink(message_queue_name);
     free(results);
     free(input_files_names);
+    free(slave_pids);
     return 0;
 }
