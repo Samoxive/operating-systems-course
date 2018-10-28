@@ -27,7 +27,7 @@ i32 main(i32 argc, char** argv) {
 
     i32 input_files_count = argc - 4;
     char* output_file_name = argv[argc - 1];
-    char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
+    char** input_files_names = extract_input_files_names_from_argv(argv, argc);
     i32 shm_fd =
         shm_open(psearch2a_shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (shm_fd == -1) {

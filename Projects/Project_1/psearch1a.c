@@ -28,11 +28,13 @@ i32 main(i32 argc, char** argv) {
         exit(-1);
     }
 
+    i32 input_files_count = argc - 4;
     char* output_file_name = argv[argc - 1];
-    for (i32 i = 3; i < argc - 1; i++) {
+    char** input_files_names = extract_input_files_names_from_argv(argv, argc);
+    for (i32 i = 0; i < input_files_count; i++) {
         i32 f = fork();
         if (f == 0) {
-            child_process(argv[i]);
+            child_process(input_files_names[i]);
             break;
         }
     }
@@ -41,18 +43,16 @@ i32 main(i32 argc, char** argv) {
     while (wait(&wstatus) > 0)
         ;
 
-    i32 input_files_count = argc - 4;
     color_parse_result* output_results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        char* output_file_name = c_string_concat(argv[3 + i], ".tmp");
+        char* output_file_name = c_string_concat(input_files_names[i], ".tmp");
         read_struct_from_file(output_file_name, &(output_results[i]),
                               sizeof(color_parse_result));
         free(output_file_name);
     }
 
-    char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
-    write_final_output_to_file(target_color, argc - 4, output_results,
+    write_final_output_to_file(target_color, input_files_count, output_results,
                                input_files_names, output_file_name);
     free(output_results);
     free(input_files_names);

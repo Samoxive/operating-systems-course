@@ -56,7 +56,7 @@ i32 main(i32 argc, char** argv) {
 
     i32 input_files_count = argc - 4;
     char* output_file_name = argv[argc - 1];
-    char** input_files_names = c_string_array_subarray(argv, 3, argc - 1);
+    char** input_files_names = extract_input_files_names_from_argv(argv, argc);
     i32 fd_semaphores =
         shm_open(SHM_NAME_SEMAPHORS, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     i32 fd_results =
