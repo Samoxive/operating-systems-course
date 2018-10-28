@@ -10,7 +10,7 @@
 #include "common_include.h"
 
 const char* psearch2aslave_exe = "./build/psearch2aslave";
-const char* psearch2a_shm_name = "/psearch";
+const char* psearch2a_shared_file_name = "./psearch2a.tmp";
 
 i32 main(i32 argc, char** argv) {
     if (argc < 5) {
@@ -28,28 +28,17 @@ i32 main(i32 argc, char** argv) {
     i32 input_files_count = argc - 4;
     char* output_file_name = argv[argc - 1];
     char** input_files_names = extract_input_files_names_from_argv(argv, argc);
-    i32 shm_fd =
-        shm_open(psearch2a_shm_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    if (shm_fd == -1) {
-        printf("Could not open shared memory blocks.\n");
-        exit(-1);
-    }
-    if (ftruncate(shm_fd, input_files_count * sizeof(color_parse_result)) ==
-        -1) {
-        printf("Could not extend shared memory blocks.\n");
+    FILE* shared_file = fopen(psearch2a_shared_file_name, "wb+");
+    if (shared_file == null) {
+        printf("Failed to open shared file.\n");
+        perror("");
         exit(-1);
     }
 
-    color_parse_result* results =
-        mmap(null, input_files_count * sizeof(color_parse_result),
-             PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    if (results == MAP_FAILED) {
-        printf("Could not mmap shared memory blocks.\n");
-        exit(-1);
-    }
-
+    i32 shared_file_fd = fileno(shared_file);
+    pid_t* slave_pids = malloc(input_files_count * sizeof(pid_t));
     for (i32 i = 0; i < input_files_count; i++) {
-        i32 f = fork();
+        pid_t f = fork();
         if (f == 0) {
             char index_str[12];
             char length_str[12];
@@ -60,10 +49,12 @@ i32 main(i32 argc, char** argv) {
             // emulate normal behavior, we give the slave executable's path to
             // argv as well. An hour was wasted on this.
             execl(psearch2aslave_exe, psearch2aslave_exe, target_color_string,
-                  input_files_names[i], index_str, length_str, null);
+                  input_files_names[i], null);
 
             printf("Slave process failed. Errno: %d\n", errno);
             exit(-1);
+        } else {
+            slave_pids[i] = f;
         }
     }
 
@@ -71,9 +62,27 @@ i32 main(i32 argc, char** argv) {
     while (wait(&wstatus) > 0)
         ;
 
+    pid_color_parse_result* pid_results =
+        mmap(null, input_files_count * sizeof(pid_color_parse_result),
+             PROT_READ, MAP_SHARED, shared_file_fd, 0);
+    if (pid_results == MAP_FAILED) {
+        printf("Could not mmap shared memory blocks.\n");
+        exit(-1);
+    }
+    color_parse_result* results =
+        malloc(input_files_count * sizeof(color_parse_result));
+    for (i32 i = 0; i < input_files_count; i++) {
+        i32 index = get_index_from_pid_array(slave_pids, input_files_count,
+                                             pid_results[i].pid);
+        results[index] = pid_results[i].result;
+    }
+
     write_final_output_to_file(target_color, input_files_count, results,
                                input_files_names, output_file_name);
-    munmap(results, input_files_count * sizeof(color_parse_result));
-    shm_unlink(psearch2a_shm_name);
+    munmap(pid_results, input_files_count * sizeof(pid_color_parse_result));
+    fclose(shared_file);
+    free(results);
     free(input_files_names);
+    free(slave_pids);
+    return 0;
 }
