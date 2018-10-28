@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sys/types.h>
 #include "typedefs.h"
 
 typedef enum {
@@ -31,9 +32,9 @@ typedef struct {
 } color_parse_result;
 
 typedef struct {
-    i32 index;
+    pid_t pid;
     color_parse_result result;
-} anon_color_parse_result;
+} pid_color_parse_result;
 
 COLOR get_color_from_string(char*);
 char* get_string_from_color(COLOR);
@@ -45,3 +46,4 @@ void write_final_output_to_file(COLOR target_color,
                                 char** file_names,
                                 char* output_file_name);
 char** extract_input_files_names_from_argv(char** argv, i32 argc);
+i32 get_index_from_pid_array(pid_t* pids, i32 pid_length, pid_t target_pid);

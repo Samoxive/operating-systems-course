@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "c_string.h"
 #include "project_util.h"
@@ -188,4 +189,15 @@ char** extract_input_files_names_from_argv(char** argv, i32 argc) {
     }
 
     return names;
+}
+
+i32 get_index_from_pid_array(pid_t* pids, i32 pid_length, pid_t target_pid) {
+    for (i32 i = 0; i < pid_length; i++) {
+        if (pids[i] == target_pid) {
+            return i;
+        }
+    }
+
+    printf("Received invalid pid from slave process.\n");
+    exit(-1);
 }
