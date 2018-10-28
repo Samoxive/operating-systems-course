@@ -40,10 +40,6 @@ i32 main(i32 argc, char** argv) {
     for (i32 i = 0; i < input_files_count; i++) {
         pid_t f = fork();
         if (f == 0) {
-            char index_str[12];
-            char length_str[12];
-            sprintf(index_str, "%d", i);
-            sprintf(length_str, "%d", input_files_count);
             // exec* family functions don't give a damn about acting reasonable,
             // given argv array will be passed to the slave directly, so to
             // emulate normal behavior, we give the slave executable's path to
