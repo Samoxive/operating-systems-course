@@ -9,11 +9,6 @@
 #include "common_include.h"
 
 typedef struct {
-    i32 index;
-    color_parse_result result;
-} piped_color_parse_result;
-
-typedef struct {
     i32 fd_pipe_r;
     i32 fd_pipe_w;
 } pipe_fd_pair;
@@ -21,8 +16,8 @@ typedef struct {
 void child_process(char* file_name, i32 fd_pipe_w, i32 index) {
     char* file_content = read_file_to_string(file_name);
     color_parse_result result = parse_string_into_colors(file_content);
-    piped_color_parse_result piped_result = {.index = index, .result = result};
-    if (write(fd_pipe_w, &piped_result, sizeof(piped_color_parse_result)) ==
+    anon_color_parse_result piped_result = {.index = index, .result = result};
+    if (write(fd_pipe_w, &piped_result, sizeof(anon_color_parse_result)) ==
         -1) {
         printf("Could not write to pipe.\n");
         exit(-1);
@@ -70,8 +65,8 @@ i32 main(i32 argc, char** argv) {
     color_parse_result* results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        piped_color_parse_result result = {0};
-        if (read(fd_pipe_r, &result, sizeof(piped_color_parse_result)) == -1) {
+        anon_color_parse_result result = {0};
+        if (read(fd_pipe_r, &result, sizeof(anon_color_parse_result)) == -1) {
             printf("Could not read from pipe.\n");
             exit(-1);
         }

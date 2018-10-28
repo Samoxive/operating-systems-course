@@ -30,6 +30,11 @@ typedef struct {
     i32 purple;
 } color_parse_result;
 
+typedef struct {
+    i32 index;
+    color_parse_result result;
+} anon_color_parse_result;
+
 COLOR get_color_from_string(char*);
 char* get_string_from_color(COLOR);
 color_parse_result parse_string_into_colors(char* string);
