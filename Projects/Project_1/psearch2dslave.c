@@ -34,4 +34,6 @@ i32 main(i32 argc, char** argv) {
 
     close(fifo_fd);
     free(file_content);
+
+    return 0;
 }
