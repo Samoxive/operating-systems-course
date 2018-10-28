@@ -23,3 +23,22 @@ char** c_string_array_subarray(char** arr, i32 start, i32 end) {
 
     return new_arr;
 }
+
+int c_string_compare(const void* a, const void* b) {
+    return strcmp(*((char**)a), *((char**)b));
+}
+
+void c_string_sort_array(char** arr, i32 length) {
+    qsort(arr, length, sizeof(char*), c_string_compare);
+}
+
+// only pass sorted array
+bool c_string_array_has_duplicates(char** arr, i32 length) {
+    for (i32 i = 1; i < length; i++) {
+        if (strcmp(arr[i - 1], arr[i]) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
