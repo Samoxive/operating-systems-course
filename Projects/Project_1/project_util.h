@@ -44,3 +44,4 @@ void write_final_output_to_file(COLOR target_color,
                                 color_parse_result* results,
                                 char** file_names,
                                 char* output_file_name);
+char** extract_input_files_names_from_argv(char** argv, i32 argc);

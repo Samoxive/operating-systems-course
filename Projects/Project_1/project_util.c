@@ -177,3 +177,15 @@ void write_final_output_to_file(COLOR target_color,
 
     fclose(output_file);
 }
+
+char** extract_input_files_names_from_argv(char** argv, i32 argc) {
+    i32 names_length = argc - 4;
+    char** names = c_string_array_subarray(argv, 3, argc - 1);
+    c_string_sort_array(names, names_length);
+    if (c_string_array_has_duplicates(names, names_length)) {
+        printf("Input file names must be unique.\n");
+        exit(-1);
+    }
+
+    return names;
+}
