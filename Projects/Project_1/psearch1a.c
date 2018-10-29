@@ -46,10 +46,10 @@ i32 main(i32 argc, char** argv) {
     color_parse_result* output_results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        char* output_file_name = c_string_concat(input_files_names[i], ".tmp");
-        read_struct_from_file(output_file_name, &(output_results[i]),
+        char* temp_output_file_name = c_string_concat(input_files_names[i], ".tmp");
+        read_struct_from_file(temp_output_file_name, &(output_results[i]),
                               sizeof(color_parse_result));
-        free(output_file_name);
+        free(temp_output_file_name);
     }
 
     write_final_output_to_file(target_color, input_files_count, output_results,
