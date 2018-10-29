@@ -11,7 +11,7 @@
 
 const char* psearch2b_shm_name = "/psearch2b_shm";
 const char* psearch2b_semaphore_name = "/psearch2b_semaphore";
-const char* psearch2bslave_exe = "./build/psearch2bslave";
+const char* psearch2bslave_exe = "./psearch2bslave";
 
 i32 main(i32 argc, char** argv) {
     if (argc < 5) {

@@ -10,7 +10,7 @@
 #include "common_include.h"
 
 const char* message_queue_name = "/psearch_mq";
-const char* psearch2cslave_exe = "./build/psearch2cslave";
+const char* psearch2cslave_exe = "./psearch2cslave";
 
 i32 main(i32 argc, char** argv) {
     if (argc < 5) {

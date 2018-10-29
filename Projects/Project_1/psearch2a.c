@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* psearch2aslave_exe = "./build/psearch2aslave";
+const char* psearch2aslave_exe = "./psearch2aslave";
 const char* psearch2a_shared_file_name = "./psearch2a.tmp";
 
 i32 main(i32 argc, char** argv) {
@@ -77,6 +77,7 @@ i32 main(i32 argc, char** argv) {
                                input_files_names, output_file_name);
     munmap(pid_results, input_files_count * sizeof(pid_color_parse_result));
     fclose(shared_file);
+    remove(psearch2a_shared_file_name);
     free(results);
     free(input_files_names);
     free(slave_pids);

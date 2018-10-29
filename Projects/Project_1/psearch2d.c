@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* psearch2dslave_exe = "./build/psearch2dslave";
+const char* psearch2dslave_exe = "./psearch2dslave";
 static char* psearch2d_fifo_name = "./psearch2d.tmp";
 
 i32 main(i32 argc, char** argv) {
