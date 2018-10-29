@@ -167,13 +167,13 @@ void write_final_output_to_file(COLOR target_color,
                               results[i].yellow + results[i].white +
                               results[i].black + results[i].purple;
         fprintf(output_file,
-                "%s: %d/%d\n%s, red: %d, green: %d, blue: %d, orange: %d, "
-                "yellow: %d, "
-                "white: %d, black: %d, purple: %d\n",
+                "%s: %d/%d\n%s, black: %d, blue: %d, green: %d, orange: %d, "
+                "purple: %d, "
+                "red: %d, white: %d, yellow: %d\n",
                 get_string_from_color(target_color), target_color_count,
-                total_colors_count, file_names[i], result.red, result.green,
-                result.blue, result.orange, result.yellow, result.white,
-                result.black, result.purple);
+                total_colors_count, file_names[i], result.black, result.blue,
+                result.green, result.orange, result.purple, result.red,
+                result.white, result.yellow);
     }
 
     fclose(output_file);
