@@ -8,11 +8,6 @@
 #include <unistd.h>
 #include "common_include.h"
 
-typedef struct {
-    i32 fd_pipe_r;
-    i32 fd_pipe_w;
-} pipe_fd_pair;
-
 void child_process(char* file_name, i32 fd_pipe_w) {
     char* file_content = read_file_to_string(file_name);
     color_parse_result result = parse_string_into_colors(file_content);
@@ -59,7 +54,6 @@ i32 main(i32 argc, char** argv) {
             free(input_files_names);
             free(slave_pids);
             exit(0);
-            break;
         } else {
             slave_pids[i] = f;
         }
