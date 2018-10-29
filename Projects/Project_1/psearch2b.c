@@ -9,9 +9,9 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* psearch2b_shm_name = "/psearch2b_shm";
-const char* psearch2b_semaphore_name = "/psearch2b_semaphore";
-const char* psearch2bslave_exe = "./psearch2bslave";
+const char* SHM_SEMAPHORES = "/semaphores";
+const char* SHM_RESULTS = "/results";
+const char* SLAVE_EXE = "./psearch2bslave";
 
 i32 main(i32 argc, char** argv) {
     if (argc < 5) {
@@ -30,8 +30,7 @@ i32 main(i32 argc, char** argv) {
     char* output_file_name = argv[argc - 1];
     char** input_files_names = extract_input_files_names_from_argv(argv, argc);
 
-    i32 fd_results =
-        shm_open(psearch2b_shm_name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    i32 fd_results = shm_open(SHM_RESULTS, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd_results == -1) {
         printf("Could not open shared memory block.\n");
         exit(-1);
@@ -51,8 +50,8 @@ i32 main(i32 argc, char** argv) {
         exit(-1);
     }
 
-    sem_t* semaphore = sem_open(psearch2b_semaphore_name, O_RDWR | O_CREAT,
-                                S_IRUSR | S_IWUSR, 1);
+    sem_t* semaphore =
+        sem_open(SHM_SEMAPHORES, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, 1);
     if (semaphore == SEM_FAILED) {
         printf("Could not create semaphore.\n");
         exit(-1);
@@ -67,7 +66,7 @@ i32 main(i32 argc, char** argv) {
     for (i32 i = 0; i < input_files_count; i++) {
         pid_t f = fork();
         if (f == 0) {
-            execl(psearch2bslave_exe, psearch2bslave_exe, target_color_string,
+            execl(SLAVE_EXE, SLAVE_EXE, target_color_string,
                   input_files_names[i], null);
 
             printf("Slave process failed. Errno: %d\n", errno);
@@ -94,7 +93,7 @@ i32 main(i32 argc, char** argv) {
 
     sem_close(semaphore);
     munmap(pid_results, input_files_count * sizeof(pid_color_parse_result));
-    shm_unlink(psearch2b_semaphore_name);
+    shm_unlink(SHM_SEMAPHORES);
     free(results);
     free(input_files_names);
     free(slave_pids);

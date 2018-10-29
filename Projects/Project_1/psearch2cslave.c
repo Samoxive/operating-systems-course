@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* message_queue_name = "/psearch_mq";
+const char* MQ_NAME = "/results_mq";
 
 i32 main(i32 argc, char** argv) {
     if (argc != 3) {
@@ -25,7 +25,7 @@ i32 main(i32 argc, char** argv) {
     }
 
     color_parse_result result = parse_string_into_colors(file_content);
-    mqd_t message_queue = mq_open(message_queue_name, O_RDWR);
+    mqd_t message_queue = mq_open(MQ_NAME, O_RDWR);
     if (message_queue == -1) {
         printf("Failed to open message queue.\n");
         exit(-1);

@@ -11,8 +11,8 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* psearch2b_shm_name = "/psearch2b_shm";
-const char* psearch2b_semaphore_name = "/psearch2b_semaphore";
+const char* SHM_SEMAPHORES = "/semaphores";
+const char* SHM_RESULTS = "/results";
 
 i32 main(i32 argc, char** argv) {
     if (argc != 3) {
@@ -30,7 +30,7 @@ i32 main(i32 argc, char** argv) {
     color_parse_result result = parse_string_into_colors(file_content);
     pid_color_parse_result pid_result = {.pid = getpid(), .result = result};
 
-    i32 fd_results = shm_open(psearch2b_shm_name, O_RDWR, S_IRUSR | S_IWUSR);
+    i32 fd_results = shm_open(SHM_RESULTS, O_RDWR, S_IRUSR | S_IWUSR);
     if (fd_results == -1) {
         printf("Could not open shared memory block.\n");
         exit(-1);
@@ -50,7 +50,7 @@ i32 main(i32 argc, char** argv) {
         exit(-1);
     }
 
-    sem_t* semaphore = sem_open(psearch2b_semaphore_name, O_RDWR);
+    sem_t* semaphore = sem_open(SHM_SEMAPHORES, O_RDWR);
     if (semaphore == SEM_FAILED) {
         printf("Could not open semaphore.\n");
         exit(-1);

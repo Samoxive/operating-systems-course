@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* message_queue_name = "/psearch_mq";
-const char* psearch2cslave_exe = "./psearch2cslave";
+const char* MQ_NAME = "/results_mq";
+const char* SLAVE_EXE = "./psearch2cslave";
 
 i32 main(i32 argc, char** argv) {
     if (argc < 5) {
@@ -31,8 +31,8 @@ i32 main(i32 argc, char** argv) {
 
     struct mq_attr message_queue_attr = {
         .mq_maxmsg = 1, .mq_msgsize = sizeof(pid_color_parse_result)};
-    mqd_t message_queue = mq_open(message_queue_name, O_RDWR | O_CREAT,
-                                  S_IRUSR | S_IWUSR, &message_queue_attr);
+    mqd_t message_queue = mq_open(MQ_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR,
+                                  &message_queue_attr);
     if (message_queue == -1) {
         printf("Failed to create message queue.\n");
         char s[100];
@@ -48,7 +48,7 @@ i32 main(i32 argc, char** argv) {
             char length_str[12];
             sprintf(index_str, "%d", i);
             sprintf(length_str, "%d", input_files_count);
-            execl(psearch2cslave_exe, psearch2cslave_exe, target_color_string,
+            execl(SLAVE_EXE, SLAVE_EXE, target_color_string,
                   input_files_names[i], null);
 
             printf("Slave process failed. Errno: %d\n", errno);
@@ -76,7 +76,7 @@ i32 main(i32 argc, char** argv) {
                                input_files_names, output_file_name);
 
     mq_close(message_queue);
-    mq_unlink(message_queue_name);
+    mq_unlink(MQ_NAME);
     free(results);
     free(input_files_names);
     free(slave_pids);

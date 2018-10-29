@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-static char* psearch2d_fifo_name = "./psearch2d.tmp";
+const char* FIFO_PIPE_NAME = "./psearch2d.tmp";
 
 i32 main(i32 argc, char** argv) {
     if (argc != 3) {
@@ -26,7 +26,7 @@ i32 main(i32 argc, char** argv) {
 
     color_parse_result result = parse_string_into_colors(file_content);
     pid_color_parse_result pid_result = {.pid = getpid(), .result = result};
-    i32 fifo_fd = open(psearch2d_fifo_name, O_RDWR);
+    i32 fifo_fd = open(FIFO_PIPE_NAME, O_RDWR);
     if (write(fifo_fd, &pid_result, sizeof(pid_color_parse_result)) == -1) {
         printf("Could not write to FIFO file.\n");
         exit(-1);

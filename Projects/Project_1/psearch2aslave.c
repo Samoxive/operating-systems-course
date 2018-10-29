@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include "common_include.h"
 
-const char* psearch2a_shared_file_name = "./psearch2a.tmp";
+const char* SHARED_FILE_NAME = "./psearch2a.tmp";
 
 i32 main(i32 argc, char** argv) {
     if (argc != 3) {
@@ -28,7 +28,7 @@ i32 main(i32 argc, char** argv) {
 
     color_parse_result result = parse_string_into_colors(file_content);
     pid_color_parse_result pid_result = {.pid = getpid(), .result = result};
-    FILE* shared_file = fopen(psearch2a_shared_file_name, "ab");
+    FILE* shared_file = fopen(SHARED_FILE_NAME, "ab");
     if (shared_file == null) {
         printf("Failed to open shared shared_file.\n");
         exit(-1);
