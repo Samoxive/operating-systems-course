@@ -98,7 +98,6 @@ i32 main(i32 argc, char** argv) {
                           input_files_count);
             free(input_files_names);
             exit(0);
-            break;
         }
     }
 

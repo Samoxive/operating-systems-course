@@ -11,7 +11,6 @@ void child_process(char* file_name) {
     write_struct_to_file(output_file_name, &result, sizeof(result));
     free(file_content);
     free(output_file_name);
-    exit(0);
 }
 
 i32 main(i32 argc, char** argv) {
@@ -35,7 +34,8 @@ i32 main(i32 argc, char** argv) {
         i32 f = fork();
         if (f == 0) {
             child_process(input_files_names[i]);
-            break;
+            free(input_files_names);
+            exit(0);
         }
     }
 
@@ -46,9 +46,11 @@ i32 main(i32 argc, char** argv) {
     color_parse_result* output_results =
         malloc(input_files_count * sizeof(color_parse_result));
     for (i32 i = 0; i < input_files_count; i++) {
-        char* temp_output_file_name = c_string_concat(input_files_names[i], ".tmp");
+        char* temp_output_file_name =
+            c_string_concat(input_files_names[i], ".tmp");
         read_struct_from_file(temp_output_file_name, &(output_results[i]),
                               sizeof(color_parse_result));
+        remove(temp_output_file_name);
         free(temp_output_file_name);
     }
 
